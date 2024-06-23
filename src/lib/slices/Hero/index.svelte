@@ -1,6 +1,6 @@
 <script lang="ts">
-	import gsap from 'gsap';
 	import { onMount } from 'svelte';
+	import gsap from 'gsap';
 	import type { Content } from '@prismicio/client';
 	import { PrismicImage, PrismicText } from '@prismicio/svelte';
 
@@ -11,6 +11,15 @@
 	export let slice: Content.HeroSlice;
 
 	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		if (prefersReducedMotion) {
+			gsap.set('.hero__heading, .hero__body, .hero__button, .hero__image, .hero__glow', {
+				opacity: 1
+			});
+			return;
+		}
+
 		const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' } });
 
 		tl.fromTo(

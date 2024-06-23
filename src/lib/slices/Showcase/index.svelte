@@ -1,5 +1,9 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import gsap from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import clsx from 'clsx';
+
 	import type { Content } from '@prismicio/client';
 	import IconGear from '~icons/ph/gear';
 	import IconCycle from '~icons/ph/arrows-clockwise';
@@ -16,14 +20,58 @@
 		gear: IconGear,
 		cycle: IconCycle
 	};
+
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		if (prefersReducedMotion) return;
+
+		gsap.registerPlugin(ScrollTrigger);
+
+		gsap.fromTo(
+			'.showcase__heading',
+			{
+				y: 100
+			},
+			{
+				y: 0,
+				ease: 'power2.inOut',
+				duration: 0.8,
+				scrollTrigger: {
+					trigger: '.showcase__heading',
+					start: 'top bottom-=40%',
+					toggleActions: 'play pause resume reverse'
+				}
+			}
+		);
+
+		gsap.fromTo(
+			'.showcase__glow',
+			{
+				scale: 0.7,
+				opacity: 0.1
+			},
+			{
+				scale: 1,
+				opacity: 0.35,
+				ease: 'power2.inOut',
+				duration: 0.8,
+				scrollTrigger: {
+					trigger: '.showcase__heading',
+					start: 'top bottom-=40%',
+					toggleActions: 'play pause resume reverse'
+				}
+			}
+		);
+	});
 </script>
 
 <Bounded data-slice-type={slice.slice_type} data-slice-variation={slice.variation}>
 	<div
-		class="absolute -z-10 aspect-video w-full max-w-2xl rounded-full bg-violet-500/40 mix-blend-screen blur-[120px] filter"
+		class="showcase__glow absolute -z-10 aspect-video w-full max-w-2xl rounded-full bg-violet-500 opacity-[0.35] mix-blend-screen blur-[120px] filter"
 	/>
 	{#if slice.primary.heading}
-		<Heading2>
+		<Heading2 class="showcase__heading">
 			<PrismicRichText field={slice.primary.heading} components={{ heading2: SpanHeading }} />
 		</Heading2>
 	{/if}
